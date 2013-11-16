@@ -7,8 +7,6 @@ var WebSocketServer = require('ws').Server
 var server = http.createServer(ecstatic).listen(8080)
   , wss = new WebSocketServer({server: server})
 
-process.stdin.pipe(process.stdout)
-
 wss.on('connection', function (ws) {
   process.stdin.pipe(es.split()).pipe(websocket(ws))
 })
