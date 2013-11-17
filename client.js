@@ -12,8 +12,6 @@ var padding = 6
   , id = 0
   , nodes = []
 
-window.nodes = nodes
-
 // Each line in the server's log file
 ws.on('data', function (line) {
   var now = new Date
