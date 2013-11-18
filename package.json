@@ -4,7 +4,8 @@
   "description": "Show response times as bubbles!",
   "main": "server.js",
   "scripts": {
-    "bundle": "./node_modules/.bin/browserify client.js -o client-bundle.js"
+    "bundle": "./node_modules/.bin/browserify client.js -o client-bundle.js",
+    "watch": "watchify client.js -o client-bundle.js -dv"
   },
   "author": "Nathan Bowser <nathan.bowser@spiderstrategies.com>",
   "license": "BSD-2-Clause",
@@ -12,7 +13,8 @@
     "websocket-stream": "~0.3.3",
     "ws": "~0.4.31",
     "event-stream": "~3.0.16",
-    "ecstatic": "~0.4.12"
+    "ecstatic": "~0.4.12",
+    "watchify": "~0.3.0"
   },
   "devDependencies": {
     "browserify": "~2.35.2"
