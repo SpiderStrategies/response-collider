@@ -74,6 +74,7 @@ function restart () {
 }
 
 function tick (e) {
+  force.start()
   // This code needs to run on tick (setInterval, or requestAnimationFrame)
   // Makes things smooth and update
   svg.selectAll('circle')
