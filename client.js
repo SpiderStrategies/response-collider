@@ -66,10 +66,10 @@ function restart () {
   circle.exit().remove()
 }
 
-function tick () {
+function tick (e) {
   // This code needs to run on tick (setInterval, or requestAnimationFrame) // Makes things smooth and update
   svg.selectAll('circle')
-      .each(gravity(.2 * force.alpha()))
+      .each(gravity(.2 * e.alpha)
       .each(collide(.5))
       .attr('cx', function (d) { return d.x })
       .attr('cy', function (d) { return d.y })
