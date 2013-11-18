@@ -127,9 +127,8 @@ function finished (transaction, now) {
   return transaction.start + (transaction.request_time || 3000) + 1000 < now
 }
 
-var resizeTimer;
-
-window.onresize = function() {
-  window.clearInterval(resizeTimer);
-  resizeTimer = setInterval(function(){ setWidthHeight(); },300);
+var resizeTimer
+window.onresize = function () {
+  window.clearInterval(resizeTimer)
+  resizeTimer = setInterval(setWidthHeight, 300)
 }
