@@ -20,11 +20,12 @@ ws.on('data', function (line) {
   req.request_time = requestScale(parseFloat(req.request_time))
   req.radius = radius(req.body_bytes_sent)
   req.color = color(req.request)
-  req.cx = req.x = 10
+  req.cx = req.x = 0
   req.cy = req.y = height + Math.random() * 30
   req.start = now.getTime()
 
   nodes.push(req)
+  restart()
 
   d3.select('#readout').text(req.request)
 })
@@ -44,7 +45,8 @@ var svg = d3.select('#animation').append('svg')
             .append('g')
               .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-function tick (e) {
+function restart () {
+  force.start()
   var now = new Date().getTime()
   for (var i = nodes.length - 1; i >= 0; i--) {
     if (finished(nodes[i], now)) {
@@ -56,20 +58,21 @@ function tick (e) {
 
   circle
     .enter().append('circle')
-      .attr('cx', function (d) { return d.x || 0 })
-      .attr('cy', function (d) { return d.y || 0 })
+      .attr('cx', function (d) { return d.x })
+      .attr('cy', function (d) { return d.y })
       .attr('r', function (d) { return d.radius })
       .style('fill', function (d) { return d.color })
 
   circle.exit().remove()
+}
 
-  circle
-      .each(gravity(.2 * e.alpha))
+function tick () {
+  // This code needs to run on tick (setInterval, or requestAnimationFrame) // Makes things smooth and update
+  svg.selectAll('circle')
+      .each(gravity(.2 * force.alpha()))
       .each(collide(.5))
-      .attr('cx', function (d) { return d.x || 0 })
-      .attr('cy', function (d) { return d.y || 0 })
-
-  force.start()
+      .attr('cx', function (d) { return d.x })
+      .attr('cy', function (d) { return d.y })
 }
 
 //  Move nodes toward cluster focus.
