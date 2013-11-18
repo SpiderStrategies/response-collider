@@ -1,9 +1,11 @@
 var websocket = require('websocket-stream')
   , ws = websocket('ws://localhost:8080')
 
-var margin = {top: 0, right: 0, bottom: 60, left: 0}
-  , width = 800 - margin.left - margin.right
-  , height = 250 - margin.top - margin.bottom
+var margin = {top: 0, right: -100, bottom: 0, left: 0}
+  , verticalCenterPercentage = .25 // The bubbles wil generally stay in this middle percentage of the screen
+  , width
+  , height
+setWidthHeight()
 
 var padding = 6
   , radius = d3.scale.sqrt().domain([0,10000]).range([5, 15])
@@ -21,7 +23,9 @@ ws.on('data', function (line) {
   req.radius = radius(req.body_bytes_sent)
   req.color = color(req.request)
   req.cx = req.x = 0
-  req.cy = req.y = height + Math.random() * 30
+  req.cy = req.y = (height * verticalCenterPercentage * Math.random()) // A Random spot within the verticalCenterPercentage
+                 + (((1 - verticalCenterPercentage) * height) / 2) // Scooted down so that the top and bottom have even padding
+                 - 15 // And scooted up to accomodate the height of the bottom label
   req.start = now.getTime()
 
   nodes.push(req)
@@ -29,6 +33,11 @@ ws.on('data', function (line) {
 
   d3.select('#readout').text(req.request)
 })
+
+function setWidthHeight() {
+  width = window.innerWidth - margin.left - margin.right,
+  height = window.innerHeight - margin.top - margin.bottom
+}
 
 var force = d3.layout.force()
     .nodes(nodes)
@@ -40,8 +49,6 @@ var force = d3.layout.force()
     .start()
 
 var svg = d3.select('#animation').append('svg')
-              .attr('width', width + margin.left + margin.right)
-              .attr('height', height + margin.top + margin.bottom)
             .append('g')
               .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
@@ -67,7 +74,8 @@ function restart () {
 }
 
 function tick (e) {
-  // This code needs to run on tick (setInterval, or requestAnimationFrame) // Makes things smooth and update
+  // This code needs to run on tick (setInterval, or requestAnimationFrame)
+  // Makes things smooth and update
   svg.selectAll('circle')
       .each(gravity(.2 * e.alpha))
       .each(collide(.5))
@@ -117,4 +125,11 @@ function collide (alpha) {
 
 function finished (transaction, now) {
   return transaction.start + (transaction.request_time || 3000) + 1000 < now
+}
+
+var resizeTimer;
+
+window.onresize = function() {
+  window.clearInterval(resizeTimer);
+  resizeTimer = setInterval(function(){ setWidthHeight(); },300);
 }
