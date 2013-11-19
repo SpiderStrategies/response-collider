@@ -1,30 +1,68 @@
+// Server configuration
 var websocket = require('websocket-stream')
   , ws = websocket('ws://localhost:8080')
 
-var margin = {top: 0, right: -100, bottom: 0, left: 0}
+//****************************************************************
+//*****  Configure Everythig Here
+//****************************************************************
+// The server values to expect
+var lowRequestTime = 1 // in milliseconds
+  , highRequestTime = 100 // in milliseconds
+  , lowBytesSent = 0 // in bytes
+  , highBytesSent = 100000 // in bytes
+
+// Bubble behavior
+var minBubbleTravelTime = 1000 // in milliseconds
+  , maxBubbleTravelTime = 15000 // in milliseconds
+  , minBubbleSize = 5 // in pixels
+  , maxBubbleSize = 50 // in pixels
   , verticalCenterPercentage = .25 // The bubbles wil generally stay in this middle percentage of the screen
+//****************************************************************
+//****************************************************************
+
+var margin = {top: 0, right: -100, bottom: 0, left: 0}
   , width
   , height
-setWidthHeight()
-
-var padding = 6
-  , radius = d3.scale.sqrt().domain([0,10000]).range([5, 15])
-  , requestScale = d3.scale.linear().domain([0.000, 500.000]).range([800, 3000])
+  , bubblePadding = 6
   , color = d3.scale.category20c().range(['#4ac7f5', '#46c5d2', '#42c4b1', '#3ac271', '#36c056', '#31bf27'])
   , id = 0
   , nodes = []
+setWidthHeight()
+
+var speedScaler = d3.scale.linear().domain([lowRequestTime, highRequestTime]).range([minBubbleTravelTime, maxBubbleTravelTime])
+  , radiusScaler = d3.scale.sqrt().domain([lowBytesSent, highBytesSent]).range([minBubbleSize, maxBubbleSize])
+
+function scaleSpeed(requestTime) {
+  var t = requestTime
+  if (requestTime > highRequestTime) {
+    t = highRequestTime
+  } else if (requestTime < lowRequestTime) {
+    t = lowRequestTime
+  }
+  return speedScaler(t)
+}
+
+function scaleRadius(bytesSent) {
+  var s = bytesSent
+  if (bytesSent > highBytesSent) {
+    s = highBytesSent
+  } else if (bytesSent < lowBytesSent) {
+    s = lowBytesSent
+  }
+  return radiusScaler(s)
+}
 
 // Each line in the server's log file
 ws.on('data', function (line) {
   var now = new Date
     , req = JSON.parse(line)
   req.id = id++
-  req.request_time = requestScale(parseFloat(req.request_time))
-  req.radius = radius(req.body_bytes_sent)
+  req.request_time = scaleSpeed(parseFloat(req.request_time))
+  req.radius = scaleRadius(req.body_bytes_sent)
   req.color = color(req.request)
   req.cx = req.x = 0
   req.cy = req.y = (height * verticalCenterPercentage * Math.random()) // A Random spot within the verticalCenterPercentage
-                 + (((1 - verticalCenterPercentage) * height) / 2) // Scooted down so that the top and bottom have even padding
+                 + (((1 - verticalCenterPercentage) * height) / 2) // Scooted down so that the top and bottom have even vertical spacing
                  - 15 // And scooted up to accomodate the height of the bottom label
   req.start = now.getTime()
 
@@ -98,7 +136,7 @@ function gravity (alpha) {
 function collide (alpha) {
   var quadtree = d3.geom.quadtree(nodes)
   return function (d) {
-    var r = d.radius + radius.domain()[1] + padding
+    var r = d.radius + radiusScaler.domain()[1] + bubblePadding
       , nx1 = d.x - r
       , nx2 = d.x + r
       , ny1 = d.y - r
@@ -109,7 +147,7 @@ function collide (alpha) {
         var x = d.x - quad.point.x
           , y = d.y - quad.point.y
           , l = Math.sqrt(x * x + y * y)
-          , r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding
+          , r = d.radius + quad.point.radius + (d.color !== quad.point.color) * bubblePadding
 
         if (l < r) {
           l = (l - r) / l * alpha
