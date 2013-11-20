@@ -6,6 +6,9 @@ is proportional to the response time on the server, and the size of the bubble i
 
 We pipe stdin over a websocket to the client, which builds a bubble for each data event. Use [response-emitter](https://github.com/SpiderStrategies/response-emitter) to generate some test data.
 
+
+![Example bubbles](https://raw.github.com/SpiderStrategies/response-collider/master/bubbles.gif)
+
 ---
 Create a logger in nginx that logs in JSON. If you're not logging in JSON format, [you should](https://journal.paul.querna.org/articles/2011/12/26/log-for-machines-in-json/).
 
