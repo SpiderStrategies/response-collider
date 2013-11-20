@@ -47,7 +47,13 @@ function scaleRadius(bytesSent) {
 
 ws.on('data', function (line) {
   var now = new Date
-    , req = JSON.parse(line)
+
+  try {
+    var req = JSON.parse(line)
+  } catch (e) {
+    // bad data, just ignore.
+    return
+  }
   req.id = id++
   req.request_time = scaleSpeed(parseFloat(req.request_time))
   req.radius = scaleRadius(req.body_bytes_sent)
