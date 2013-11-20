@@ -1,38 +1,31 @@
-// Server configuration
 var websocket = require('websocket-stream')
   , ws = websocket('ws://localhost:8080')
 
-//****************************************************************
-//*****  Configure Everythig Here
-//****************************************************************
-// The server values to expect
-var lowRequestTime = 1 // in milliseconds
-  , highRequestTime = 100 // in milliseconds
-  , lowBytesSent = 0 // in bytes
-  , highBytesSent = 100000 // in bytes
+var lowRequestTime = 1 // millis
+  , highRequestTime = 100 // millis
+  , lowBytesSent = 0 // bytes
+  , highBytesSent = 100000 // bytes
 
-// Bubble behavior
-var minBubbleTravelTime = 1000 // in milliseconds
-  , maxBubbleTravelTime = 15000 // in milliseconds
-  , minBubbleSize = 5 // in pixels
-  , maxBubbleSize = 50 // in pixels
+// Control bubble behavior
+var minBubbleTravelTime = 1000 // millis
+  , maxBubbleTravelTime = 15000 // millis
+  , minBubbleSize = 5 // pixels
+  , maxBubbleSize = 50 // pixels
   , verticalCenterPercentage = .25 // The bubbles wil generally stay in this middle percentage of the screen
-//****************************************************************
-//****************************************************************
 
 var margin = {top: 0, right: -100, bottom: 0, left: 0}
-  , width
-  , height
   , bubblePadding = 6
   , color = d3.scale.category20c().range(['#4ac7f5', '#46c5d2', '#42c4b1', '#3ac271', '#36c056', '#31bf27'])
   , id = 0
   , nodes = []
+  , width, height
+
 setWidthHeight()
 
 var speedScaler = d3.scale.linear().domain([lowRequestTime, highRequestTime]).range([minBubbleTravelTime, maxBubbleTravelTime])
   , radiusScaler = d3.scale.sqrt().domain([lowBytesSent, highBytesSent]).range([minBubbleSize, maxBubbleSize])
 
-function scaleSpeed(requestTime) {
+function scaleSpeed (requestTime) {
   var t = requestTime
   if (requestTime > highRequestTime) {
     t = highRequestTime
@@ -52,7 +45,6 @@ function scaleRadius(bytesSent) {
   return radiusScaler(s)
 }
 
-// Each line in the server's log file
 ws.on('data', function (line) {
   var now = new Date
     , req = JSON.parse(line)
