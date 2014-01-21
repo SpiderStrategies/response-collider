@@ -1,6 +1,6 @@
 {
   "name": "bubbles",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Show response times as bubbles!",
   "main": "server.js",
   "scripts": {
