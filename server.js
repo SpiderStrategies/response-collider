@@ -12,3 +12,5 @@ process.stdin.setMaxListeners(0)
 wss.on('connection', function (ws) {
   process.stdin.pipe(es.split()).pipe(websocket(ws))
 })
+
+process.stdin.resume()
