@@ -1,6 +1,5 @@
 <html>
   <head>
-    <script src="/d3.v3.min.js"></script>
     <meta charset="utf-8">
     <style>
       body {
@@ -36,5 +35,18 @@
     <div id="animation"></div>
     <div id="readout"></div>
   </body>
-  <script src="/client-bundle.js"></script>
+  <script type="text/javascript">
+    var d3 = document.createElement('script')
+    d3.setAttribute('type', 'text/javascript')
+    d3.setAttribute('src', window.location.href + '/d3.v3.min.js')
+
+    var client = document.createElement('script')
+    client.setAttribute('type', 'text/javascript')
+    client.setAttribute('src', window.location.href + '/client-bundle.js')
+
+    var head = document.getElementsByTagName('head')[0]
+    head.appendChild(d3)
+    head.appendChild(client)
+
+  </script>
 </html>

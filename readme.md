@@ -33,6 +33,8 @@ log_format json '{'
   access_log  /var/log/dash/www-access.log json;
 ```
 
+You can change env.json to set the mount point of this app and regenerate the client bundle using `npm run bundle`.
+
 * We only need the *body_bytes_sent*, *request_time*, and *request* fields.
 
 ---
