@@ -14,7 +14,8 @@
     "ws": "~0.4.31",
     "event-stream": "~3.0.16",
     "ecstatic": "~0.4.12",
-    "watchify": "~0.3.0"
+    "watchify": "~0.3.0",
+    "d3": "^3.4.8"
   },
   "devDependencies": {
     "browserify": "~2.35.2"

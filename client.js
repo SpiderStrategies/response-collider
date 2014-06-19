@@ -1,6 +1,7 @@
 var websocket = require('websocket-stream')
   , env = require('./env.json')
   , ws = websocket('wss://' + env.mountPoint)
+  , d3 = require('d3')
 
 var lowRequestTime = 1 // millis
   , highRequestTime = 100 // millis
